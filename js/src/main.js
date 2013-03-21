@@ -1,20 +1,21 @@
-$(function() {
-	!function ($, window, document, undefined) {
+require.config({ 
+	paths: { 
+		'jquery': '../lib/jquery-1.9.1.min',
+		'pubsub': '../lib/pubsub'
+	} 
+});
+
+require(['jquery', 'cart', 'pubsub'], function ($, Cart) {
+	$(function() {
 		var text = {
 				add: $('.btn-success').eq(0).text(),
 				rem: 'Remove from cart'
 			},
 			icon = {
 				add: $('.btn-success').find('i').get(0).className,
-				rem: 'icon-fire icon-white'
-			};
-
-		var cart = (function() {
-			var $cart = $('#cart');
-			function add () { $cart.html(parseInt($cart.text(), 10) + 1); }
-			function rem () { $cart.html(parseInt($cart.text(), 10) - 1); }
-			return { add: add, remove: rem };
-		})();
+				rem: 'icon-remove icon-white'
+			},
+			cart = new Cart('cart');
 
 		function add() {
 			var _this = this,
@@ -23,7 +24,7 @@ $(function() {
 			_this.className = 'btn btn-warning';
 			$this.html($this.html().replace(text.add, text.rem));
 			$this.find('i').get(0).className = icon.rem;
-			$(document).trigger('cart.add', [_this]);
+			$.publish('cart.add', [_this]);
 		}
 
 		function remove() {
@@ -33,13 +34,12 @@ $(function() {
 			_this.className = 'btn btn-success';
 			$this.html($this.html().replace(text.rem, text.add));
 			$this.find('i').get(0).className = icon.add;
-			$(document).trigger('cart.remove', [_this]);
+			$.publish('cart.remove', [_this]);
 		}
 
 		$(document).on('click', '.btn-success', add);
 		$(document).on('click', '.btn-warning', remove);
-		$(document).on('cart.add', cart.add);
-		$(document).on('cart.remove', cart.remove);
+		$('#vlog').get(0).href = 'http://www.youtube.com/playlist?list=PLfkCqyu_J41kGU2sa_aIeZCxVt2c-TBFj';
+	});
 
-	}(jQuery, window, document);
 });
